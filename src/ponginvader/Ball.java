@@ -32,30 +32,31 @@ public class Ball implements Commons{
     public void update() {
         x += xa;
         y += ya;
-        if (x < 0) { //si se sale del tablero del lado izquierdo, incrementa el marcador al player2
+        if (y < 0) { //si se sale del tablero del lado izquierdo, incrementa el marcador al player2
             game.getPanel().increaseScore(2);
-            x = game.getWidth() / 2;
-            xa = -xa;
+            y = game.getHeight() / 2;
+            ya = -ya;
             System.out.println("incremento marcador P1");
         }
-        else if (x > game.getWidth() - WIDTH - 7) {
+        else if (y > game.getHeight() - HEIGHT - 7) {
             game.getPanel().increaseScore(1);
-            x = game.getWidth() / 2;
-            xa = -xa;
-        }
-        else if (y < 0 || y > game.getHeight() - HEIGHT - 29)
+           y = game.getHeight() / 2;
             ya = -ya;
+        }
+        else if (x < 0 || x > game.getWidth() - WIDTH - 29)
+            xa = -xa;
         if (game.getPanel().getScore(1) == 10)
             JOptionPane.showMessageDialog(null, "Player 1 wins", "Pong", JOptionPane.PLAIN_MESSAGE);
         else if (game.getPanel().getScore(2) == 10)
             JOptionPane.showMessageDialog(null, "Player 2 wins", "Pong", JOptionPane.PLAIN_MESSAGE);
         checkCollision();
-        //System.out.println("X: "+x + " Y:"+y);
+        //posicion de la pelota
+        System.out.println("X: "+x + ", Y:"+y);
     }
 
     public void checkCollision() {
         if (game.getPanel().getPlayer(1).getBounds().intersects(getBounds()) || game.getPanel().getPlayer(2).getBounds().intersects(getBounds()))
-            xa = -xa;
+            ya = -ya;
     }
 
     public Rectangle getBounds() {

@@ -31,8 +31,8 @@ public class PongInvaderPanel extends JPanel implements ActionListener, KeyListe
         //a que juego pertenece
         ball = new Ball(game);
         //for each player: juego al que pertenecen, move up, move down, posX
-        player1 = new Racket(game, KeyEvent.VK_UP, KeyEvent.VK_DOWN, game.getWidth() - 36);
-        player2 = new Racket(game, KeyEvent.VK_W, KeyEvent.VK_S, 20);
+        player1 = new Racket(game, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, game.getWidth()/2, 100);
+        player2 = new Racket(game, KeyEvent.VK_A, KeyEvent.VK_D, game.getWidth()/2 ,game.getHeight()-100);
         Timer timer = new Timer(5, this);
         timer.start();
         addKeyListener(this);
@@ -88,7 +88,7 @@ public class PongInvaderPanel extends JPanel implements ActionListener, KeyListe
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.drawString(game.getPanel().getScore(1) + " : " + game.getPanel().getScore(2), game.getWidth() / 2, 10);
-        g.setColor(Color.white);
+        g.setColor(Color.RED);
         ball.paint(g);
         player1.paint(g);
         player2.paint(g);

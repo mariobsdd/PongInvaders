@@ -14,52 +14,52 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 public class Racket implements Commons {
-    private static final int WIDTH = 10, HEIGHT = 60;
     private PongInvader game;
-    private int up, down;
-    private int x;
-    private int y, ya;
+    private int left, right;
+    private int x, xa;
+    private int y;
     
     /*
         x,y -> posiciones iniciales del jugador
         
     */
 
-    public Racket(PongInvader game, int up, int down, int x) {
+    public Racket(PongInvader game, int left, int right, int x, int y) {
         this.game = game;
         this.x = x;
-        y = game.getHeight() / 2;
-        this.up = up;
-        this.down = down;
+        //y = game.getHeight() / 2;
+        this.y = y;
+        this.left = left;
+        this.right = right;
     }
 
     public void update() {
-        if (y > 0 && y < game.getHeight() - HEIGHT - 29)
-            y += ya;
-        else if (y == 0)
-            y++;
-        else if (y == game.getHeight() - HEIGHT - 29)
-            y--;
+        if (x > 0 && x < game.getWidth() - DEFENDER_WIDTH)
+            x += xa;
+        else if (x == 0)
+            x++;
+        else if (x == game.getWidth() - DEFENDER_WIDTH)
+            x--;
     }
 
     public void pressed(int keyCode) {
-        if (keyCode == up)
-            ya = -1;
-        else if (keyCode == down)
-            ya = 1;
+        if (keyCode == left)
+            xa = -1;
+        else if (keyCode == right)
+            xa = 1;
     }
 
     public void released(int keyCode) {
-        if (keyCode == up || keyCode == down)
-            ya = 0;
+        if (keyCode == left || keyCode == right)
+            xa = 0;
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(x, y, WIDTH, HEIGHT);
+        return new Rectangle(x, y, DEFENDER_WIDTH, DEFENDER_HEIGHT);
     }
 
     public void paint(Graphics g) {
-        g.fillRect(x, y, WIDTH, HEIGHT);
+        g.fillRect(x, y, DEFENDER_WIDTH, DEFENDER_HEIGHT);
         //g.setColor(Color.red);
     }
 }
