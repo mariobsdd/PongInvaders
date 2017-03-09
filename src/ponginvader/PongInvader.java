@@ -10,12 +10,13 @@ package ponginvader;
  * @author mariobsdd
  */
 import java.awt.Color;
+import java.net.Socket;
 import javax.swing.JFrame;
 
 public class PongInvader extends JFrame implements Commons{
     private PongInvaderPanel panel;
 
-    public PongInvader() {
+    public PongInvader(Socket socket, int playerNumber, String ip) {
         //Default Settings
         setSize(BOARD_WIDTH, BOARD_HEIGHT);
         setTitle("Space-Pong Invader");
@@ -23,7 +24,7 @@ public class PongInvader extends JFrame implements Commons{
         setVisible(true);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        panel = new PongInvaderPanel(this);
+        panel = new PongInvaderPanel(this, socket, playerNumber, ip);
         add(panel);
     }
 
@@ -32,6 +33,6 @@ public class PongInvader extends JFrame implements Commons{
     }
 
     public static void main(String[] args) {
-        new PongInvader();
+        new PongInvader(null,0,null);
     }
 }

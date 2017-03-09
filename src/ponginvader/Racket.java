@@ -12,19 +12,26 @@ package ponginvader;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Racket implements Commons {
     private PongInvader game;
     private int left, right;
     private int x, xa;
-    private int y,size;
-    
+    private int y,playerNumber,size;
+    private String ip;
     
     /*
         x,y -> posiciones iniciales del jugador
     */
 
-    public Racket(PongInvader game, int left, int right, int x, int y) {
+    public Racket(PongInvader game, int left, int right, int x, int y, String ip,int playerNumber) {
         this.size = DEFENDER_WIDTH;
         this.game = game;
         this.x = x;
@@ -32,6 +39,8 @@ public class Racket implements Commons {
         this.y = y;
         this.left = left;
         this.right = right;
+        this.ip = ip;
+        this.playerNumber = playerNumber;
     }
 
     public int getSize() {
@@ -56,6 +65,21 @@ public class Racket implements Commons {
             xa = -2;
         else if (keyCode == right)
             xa = 2;
+        int port = 125;
+        DatagramSocket clientSocket;
+        try {
+            clientSocket = new DatagramSocket();
+            String message = "";
+            //need to be changed for the number of player
+            message = playerNumber+" " + x+ "\r";
+            byte[] msg = message.getBytes("UTF-8");
+            DatagramPacket sendPacket = new DatagramPacket(msg, msg.length, InetAddress.getByName(ip), port);
+            clientSocket.send(sendPacket);
+        } catch (SocketException ex) {
+            Logger.getLogger(Racket.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Racket.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void released(int keyCode) {
@@ -69,6 +93,10 @@ public class Racket implements Commons {
 
     public void paint(Graphics g, int it) {
         g.fillRect(x, y, DEFENDER_WIDTH - delta*it, DEFENDER_HEIGHT);
-        //g.setColor(Color.red);
+	}
+   
+    public void setMovement(int x){
+        this.x = x;
     }
+    
 }

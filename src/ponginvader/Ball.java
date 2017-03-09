@@ -41,8 +41,7 @@ public class Ball implements Commons{
             this.x = x;
             this.y = y;
         }
-    }
-
+	}
     public int getIteracion() {
         return iteracion;
     }
