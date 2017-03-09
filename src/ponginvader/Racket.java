@@ -21,7 +21,6 @@ public class Racket implements Commons {
     
     /*
         x,y -> posiciones iniciales del jugador
-        
     */
 
     public Racket(PongInvader game, int left, int right, int x, int y) {
@@ -37,16 +36,16 @@ public class Racket implements Commons {
         if (x > 0 && x < game.getWidth() - DEFENDER_WIDTH)
             x += xa;
         else if (x == 0)
-            x++;
+            x+=2;
         else if (x == game.getWidth() - DEFENDER_WIDTH)
-            x--;
+            x-=2;
     }
 
     public void pressed(int keyCode) {
         if (keyCode == left)
-            xa = -1;
+            xa = -2;
         else if (keyCode == right)
-            xa = 1;
+            xa = 2;
     }
 
     public void released(int keyCode) {
@@ -57,9 +56,9 @@ public class Racket implements Commons {
     public Rectangle getBounds() {
         return new Rectangle(x, y, DEFENDER_WIDTH, DEFENDER_HEIGHT);
     }
-
-    public void paint(Graphics g) {
-        g.fillRect(x, y, DEFENDER_WIDTH, DEFENDER_HEIGHT);
+   
+    public void paint(Graphics g, int it) {
+        g.fillRect(x, y, DEFENDER_WIDTH - 7*it, DEFENDER_HEIGHT);
         //g.setColor(Color.red);
     }
 }

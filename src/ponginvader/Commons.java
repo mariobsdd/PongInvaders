@@ -10,13 +10,15 @@ package ponginvader;
  * @author mariobsdd
  */
 public interface Commons {
-    public static final int BOARD_WIDTH = 700;
+    public static final int BOARD_WIDTH = 1000;
     public static final int BOARD_HEIGHT = 700;
     
     public static final int BOMB_HEIGHT = 5;
     
-    public static final int SHOOTER_HEIGHT = 12;
-    public static final int SHOOTER_WIDTH = 12;
+    public static final int SHOOTER_HEIGHT = 80;
+    public static final int SHOOTER_WIDTH = 20;
+    
+    public static int iteracion = 0;
     
     public static final int DEFENDER_HEIGHT = 15;
     public static final int DEFENDER_WIDTH = 200;
