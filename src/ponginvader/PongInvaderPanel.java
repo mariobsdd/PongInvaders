@@ -27,7 +27,7 @@ import static ponginvader.Commons.DEFENDER_WIDTH;
 public class PongInvaderPanel extends JPanel implements ActionListener, KeyListener, Commons {
     private PongInvader game;
     private Ball ball;
-    private Racket player1, player2;
+    private Racket player1, player2, player3, player4;
     private Cannon stricker1, stricker2;
     private int score1, score2;
 
@@ -39,13 +39,15 @@ public class PongInvaderPanel extends JPanel implements ActionListener, KeyListe
         //angulo, pos en x, pos en y
         
         //a que juego pertenece
-        ball = new Ball(game,game.getWidth()/2,game.getHeight()/2);
+        ball = new Ball(game,game.getWidth()/2,game.getHeight()/2,1,false);
         //for each player: juego al que pertenecen, move up, move down, posX
         player1 = new Racket(game, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, 300, 100);
         player2 = new Racket(game, KeyEvent.VK_A, KeyEvent.VK_D, game.getWidth() - 300 ,game.getHeight()-150);
+        player3 = new Racket(game, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, game.getWidth()/2-100, 0);
+        player4 = new Racket(game, KeyEvent.VK_A, KeyEvent.VK_D, game.getWidth()/2 - 100, game.getHeight()-44);
         
-        stricker1 = new Cannon(game,KeyEvent.VK_C,KeyEvent.VK_V,game.getWidth()/2 - SHOOTER_WIDTH/2,-1,false);
-        stricker2 = new Cannon(game,KeyEvent.VK_N,KeyEvent.VK_B, (int) (game.getWidth()/2),game.getHeight()-29,true);
+        stricker1 = new Cannon(game,KeyEvent.VK_C,KeyEvent.VK_V,KeyEvent.VK_SPACE,game.getWidth()/2 - SHOOTER_WIDTH/2,-1,false);
+        stricker2 = new Cannon(game,KeyEvent.VK_N,KeyEvent.VK_B,KeyEvent.VK_M, game.getWidth()/2,game.getHeight()-29,true);
         Timer timer = new Timer(5, this);
         timer.start();
         addKeyListener(this);
@@ -114,14 +116,15 @@ public class PongInvaderPanel extends JPanel implements ActionListener, KeyListe
         ball.paint(g);
         int it = ball.getIteracion();
         int it2 = ball.getIteracion2();
+        int otro = ball.getOtrait();
         player1.paint(g,it);
         player2.paint(g,it2);
         
         //base de strickers
         g.setColor(Color.GREEN);
-        g.fillRect(game.getWidth()/2-100, 0, DEFENDER_WIDTH, DEFENDER_HEIGHT);
+        player3.paint(g, otro);
         g.setColor(Color.GREEN);
-        g.fillRect(game.getWidth()/2 - 100, game.getHeight()-44, DEFENDER_WIDTH, DEFENDER_HEIGHT);
+        player4.paint(g, otro);
         //cannons
         g.setColor(Color.GREEN);
         stricker1.paint(g);

@@ -5,10 +5,12 @@
  */
 package ponginvader;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 import static ponginvader.Commons.DEFENDER_HEIGHT;
 import static ponginvader.Commons.DEFENDER_WIDTH;
 
@@ -18,25 +20,36 @@ import static ponginvader.Commons.DEFENDER_WIDTH;
  */
 public class Cannon implements Commons {
     private PongInvader game;
-    private int left,right;
+    private int left,right,shoot;
     private int x,y;
     private int angulo =0;
     boolean rotate;
+    private Ball ball;
+    private ArrayList<Ball> balls = new ArrayList();
+    private boolean activeBall;
 
-    public Cannon(PongInvader game, int left, int right, int x, int y,boolean rotate) {
+    public Cannon(PongInvader game, int left, int right, int shoot, int x, int y,boolean rotate) {
         this.game = game;
         this.left = left;
         this.right = right;
+        this.shoot = shoot;
         this.x = x;
         this.y = y;
         this.rotate = rotate;
+        this.activeBall = false;
+        int cont = 0;
+        while(cont < ballsAmount){
+            balls.add(new Ball(game,x,y+DEFENDER_HEIGHT,angulo/10,rotate));
+            cont++;
+        }
     }
+    
     public void update(){
-//        if((x >= 300) && (x<game.getWidth()-300-DEFENDER_WIDTH)){
-//            y=100;
-//            x=300+DEFENDER_WIDTH/2;
-//        }
-       
+        if (activeBall){
+            ball.update();
+            if(balls.size()>0)
+                balls.get(balls.size()-1).update();
+        }
     }
     
     public void pressed(int keyCode){
@@ -46,6 +59,18 @@ public class Cannon implements Commons {
         else if(keyCode == right && angulo<50){
             angulo += 10;
         } 
+        else if(keyCode == shoot){
+            if(balls.size()>0){
+                //Ball temp = new Ball(game,x,y+DEFENDER_HEIGHT,angulo/10);
+                balls.set(balls.size()-1, ball = new Ball(game,x,y+DEFENDER_HEIGHT,angulo/10,rotate));
+                //ball = balls.get(balls.size()-1);
+                balls.remove(balls.size()-1);
+                System.out.println(balls.size());
+            }
+            activeBall = true;
+            System.out.println("dispara!"+rotate);
+            System.out.println(x+" , "+y);
+        }
     }
     
     public void released(int keyCode) {
@@ -76,6 +101,10 @@ public class Cannon implements Commons {
             g2.draw(rect);
             g2.fill(rect);
             g2.dispose();  
+        }
+        if(activeBall){
+            g.setColor(Color.BLUE);
+            ball.paint(g);
         }
         
     }

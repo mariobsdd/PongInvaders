@@ -17,19 +17,29 @@ public class Racket implements Commons {
     private PongInvader game;
     private int left, right;
     private int x, xa;
-    private int y;
+    private int y,size;
+    
     
     /*
         x,y -> posiciones iniciales del jugador
     */
 
     public Racket(PongInvader game, int left, int right, int x, int y) {
+        this.size = DEFENDER_WIDTH;
         this.game = game;
         this.x = x;
         //y = game.getHeight() / 2;
         this.y = y;
         this.left = left;
         this.right = right;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 
     public void update() {
@@ -58,7 +68,7 @@ public class Racket implements Commons {
     }
 
     public void paint(Graphics g, int it) {
-        g.fillRect(x, y, DEFENDER_WIDTH - 7*it, DEFENDER_HEIGHT);
+        g.fillRect(x, y, DEFENDER_WIDTH - delta*it, DEFENDER_HEIGHT);
         //g.setColor(Color.red);
     }
 }

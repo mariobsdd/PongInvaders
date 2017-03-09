@@ -19,9 +19,10 @@ public interface Commons {
     public static final int SHOOTER_WIDTH = 20;
     
     public static int iteracion = 0;
-    
+    public static final int delta = 15;
     public static final int DEFENDER_HEIGHT = 15;
     public static final int DEFENDER_WIDTH = 200;
+    public static final int ballsAmount = 20;
     
     
     public static final int BORDER_RIGHT = 30;
