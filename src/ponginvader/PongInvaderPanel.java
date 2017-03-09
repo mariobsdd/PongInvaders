@@ -17,6 +17,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.Socket;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 import static ponginvader.Commons.DEFENDER_HEIGHT;
@@ -27,11 +35,20 @@ import static ponginvader.Commons.DEFENDER_WIDTH;
 public class PongInvaderPanel extends JPanel implements ActionListener, KeyListener, Commons {
     private PongInvader game;
     private Ball ball;
-    private Racket player1, player2;
+    static ArrayList<Racket> players = new ArrayList<Racket>();
+    static ArrayList playersX = new ArrayList();
+    static Racket player1, player2;
     private Cannon stricker1, stricker2;
     private int score1, score2;
+    private int playerNumber;
 
-    public PongInvaderPanel(PongInvader game) {
+    public PongInvaderPanel(PongInvader game,Socket socket, int playerNumber, String ip) {
+        ListenMovements request = new ListenMovements();
+        Thread thread = new Thread(request);
+        this.playerNumber = playerNumber;
+        thread.start();
+        playersX.add(0);
+        playersX.add(0);
         setBackground(Color.BLACK);
         this.game = game;
         
@@ -39,11 +56,19 @@ public class PongInvaderPanel extends JPanel implements ActionListener, KeyListe
         //angulo, pos en x, pos en y
         
         //a que juego pertenece
-        ball = new Ball(game,game.getWidth()/2,game.getHeight()/2);
+        //ball = new Ball(game,game.getWidth()/2,game.getHeight()/2);
         //for each player: juego al que pertenecen, move up, move down, posX
-        player1 = new Racket(game, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, 300, 100);
-        player2 = new Racket(game, KeyEvent.VK_A, KeyEvent.VK_D, game.getWidth() - 300 ,game.getHeight()-150);
-        
+        if(playerNumber == 0){
+            player1 = new Racket(game, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, 300, 100, ip, playerNumber);
+            players.add(player1);
+            player2 = new Racket(game, KeyEvent.VK_A, KeyEvent.VK_D, game.getWidth() - 300 ,game.getHeight()-150, ip, playerNumber);
+            players.add(player2);
+        }else{
+            player1 = new Racket(game, KeyEvent.VK_A, KeyEvent.VK_D, 300, 100, ip, playerNumber);
+            players.add(player1);
+            player2 = new Racket(game, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, game.getWidth() - 300 ,game.getHeight()-150, ip, playerNumber);
+            players.add(player2);
+        }
         stricker1 = new Cannon(game,KeyEvent.VK_C,KeyEvent.VK_V,game.getWidth()/2 - SHOOTER_WIDTH/2,-1,false);
         stricker2 = new Cannon(game,KeyEvent.VK_N,KeyEvent.VK_B, (int) (game.getWidth()/2),game.getHeight()-29,true);
         Timer timer = new Timer(5, this);
@@ -54,9 +79,9 @@ public class PongInvaderPanel extends JPanel implements ActionListener, KeyListe
 
     public Racket getDefender(int playerNo) {
         if (playerNo == 1)
-            return player1;
+            return players.get(0);
         else
-            return player2;
+            return players.get(1);
     }
     public Cannon getStricker(int playerNo) {
         if (playerNo == 1)
@@ -80,9 +105,9 @@ public class PongInvaderPanel extends JPanel implements ActionListener, KeyListe
     }
 
     private void update() {
-        ball.update();
-        player1.update();
-        player2.update();
+//        ball.update();
+        players.get(0).update();
+        players.get(1).update();
         stricker1.update();
         stricker2.update();
     }
@@ -93,17 +118,48 @@ public class PongInvaderPanel extends JPanel implements ActionListener, KeyListe
     }
 
     public void keyPressed(KeyEvent e) {
-        player1.pressed(e.getKeyCode());
-        player2.pressed(e.getKeyCode());
+        if(playerNumber == 0)
+            players.get(0).pressed(e.getKeyCode());
+        if(playerNumber == 1)
+            players.get(1).pressed(e.getKeyCode());
         stricker1.pressed(e.getKeyCode());
         stricker2.pressed(e.getKeyCode());
     }
 
     public void keyReleased(KeyEvent e) {
-        player1.released(e.getKeyCode());
-        player2.released(e.getKeyCode());
+        
+        players.get(0).released(e.getKeyCode());
+
+        players.get(1).released(e.getKeyCode());
         stricker1.released(e.getKeyCode());
         stricker2.released(e.getKeyCode());
+    }
+    
+     static class ListenMovements implements Runnable{
+
+        @Override
+        public void run() {
+            int movementPort = 128;
+            byte[] receiveData = new byte[1024];
+            DatagramSocket serverSocket = null;
+            try {
+                serverSocket = new DatagramSocket(movementPort);
+                while(true){
+                    DatagramPacket packet = new DatagramPacket(receiveData, receiveData.length);
+                    serverSocket.receive(packet);
+                    String read = new String(packet.getData(), packet.getOffset(), packet.getLength(), "UTF-8");
+                    String[] split = read.split("\\s+");
+                    //split = split[split.length-2].split("\\s+");
+                    playersX.set(Integer.parseInt(split[0]),Integer.parseInt(split[1]));
+                    System.out.println(packet.getAddress()+ " said: " + read);
+                }
+            } catch (SocketException ex) {
+                Logger.getLogger(PongInvaderPanel.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(PongInvaderPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        
     }
 
     @Override
@@ -111,11 +167,15 @@ public class PongInvaderPanel extends JPanel implements ActionListener, KeyListe
         super.paintComponent(g);
         //g.drawString(game.getPanel().getScore(1) + " : " + game.getPanel().getScore(2), game.getWidth() / 2, 10);
         g.setColor(Color.RED);
-        ball.paint(g);
-        int it = ball.getIteracion();
-        int it2 = ball.getIteracion2();
-        player1.paint(g,it);
-        player2.paint(g,it2);
+        //ball.paint(g);
+//        int it = ball.getIteracion();
+//        int it2 = ball.getIteracion2();
+        if(playerNumber == 0)
+            players.get(1).setMovement((int)playersX.get(1));
+        if(playerNumber == 1)
+            players.get(0).setMovement((int)playersX.get(0));
+        players.get(0).paint(g,0);
+        players.get(1).paint(g,0);
         
         //base de strickers
         g.setColor(Color.GREEN);
